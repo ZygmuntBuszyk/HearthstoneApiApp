@@ -3,7 +3,8 @@
     <p class="error" v-if="error"> {{error}}</p>
     <div v-for="(card,index) in cards" :key="index">
       <!-- test -->
-        <p> {{card}}</p>
+      <!-- <p>{{card.cardId}}</p> -->
+        <p v-for="(cart,index) in card" :key="index"> '{{cart.cardId}}',</p>
       <!-- actuall -->
     <!-- <h1 >{{ card.name }}</h1>
     <p> {{card.flavor}}</p>
@@ -32,7 +33,7 @@ export default {
 
       // GET ALL THE CARDS  //
       this.cards = await ApiHandle.getCards();
-      console.log(this.cards.Basic);
+      console.log(this.cards);
     } catch (err) {
       this.error = err.message;
     }
