@@ -1,7 +1,7 @@
 <template>
   <div id="cardIds">
     <p>
-    {{cardIds}}
+    <!-- {{cardIds}} -->
     </p>
   </div>
 </template>
