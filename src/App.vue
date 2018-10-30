@@ -3,7 +3,7 @@
     <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
     <cardTesting /> 
       <!-- <cardIds /> -->
-      
+    
       <p v-if="error">{{error}}</p>
       <p>3 Randomed card Ids from Part of Basic cards: </p>
       <p v-for="(card, index) in cards" :key="index">{{card}}</p>
@@ -32,8 +32,10 @@ export default {
 },
  async created() {
    // CHOOSING 3 RANDOM IDS FOR REQUESTS .
+  //  console.log( localStorage.getItem('first'))
     try {
       // console.log(cardIds.props)
+
       const test = cardIds.props;
       const shuffled = test.sort(() => .5 - Math.random());// shuffle  
       let selected =shuffled.slice(0,3) ; //get sub-array of first n elements AFTER shuffle
