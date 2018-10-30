@@ -1,25 +1,19 @@
 <template>
   <div class="test">
     <p class="error" v-if="error"> {{error}}</p>
-    <p> {{text}} </p>
-   <div id="load"> <pulse-loader :loading="loading" :color="color" :size="size"></pulse-loader> </div>
-<p>Random cards from a Basic set: </p>
+    <h1> {{randomizedFlavor}} </h1>
+    <p> {{checkText}}</p>
+    <p v-if="loadCheck"> {{text}} </p>
+   <div id="load" v-if="loadCheck"> <pulse-loader :loading="loading" :color="color" :size="size"></pulse-loader> </div>
+<p>Random cards from a The Boomsday Project set: </p>
     <div v-for="(card,index) in cards" :key="index">
       <!-- test -->
-      <ul v-if="card.img">
-         <!-- <li>{{card}} </li> -->
-         
-        <li> <img v-bind:src="card.img" /> </li>
-         
+      <ul>
+        <li v-on:click="imageClick(card)"> <img v-bind:src="card.img" /> </li>
            <li><p> {{card.cardId}} </p></li>
            <li><p> flavor:  {{card.flavor}} </p></li>
         </ul>
         <!-- <p v-for="(cart,index) in card" :key="index"> '{{cart.cardId}}',</p> -->
-      
-      <!-- actuall -->
-    <!-- <h1 >{{ card.name }}</h1>
-    <p> {{card.flavor}}</p>
-    <img v-bind:src="card.img" /> -->
     </div>
   </div>
 </template>
@@ -38,7 +32,10 @@ export default {
       cards: [],
       error: '',
       text: '',
-      testSessionStarage: ''
+      checkText: '',
+      loadCheck: false,
+      randomizedFlavor: '',
+      randomizedFlavorId: ''
     };
   },
   async created() {
@@ -47,47 +44,47 @@ export default {
       // localStorage.clear()
       if(localStorage.getItem('first')) 
       {
-
+        this.loadCheck = false;
         
        
-        let localObject = (JSON.parse(localStorage.getItem('first')))[ 'The Boomsday Project' ]
-        // this.cards = localObject.Basic;
-        // console.log(localObject)
-        //  const keys = Object.keys(localObject)
-        // for (const key of keys) {
-        // console.log(key)
-        // }
+        let localObject = (JSON.parse(localStorage.getItem('first')))[ 'The Boomsday Project' ];
         const widthSrc = [];
         for(let i = 0; i < localObject.length; i++){
-          // console.log(localObject[i])
-          if(localObject[i].img !== undefined){
+          if(localObject[i].img !== undefined && localObject[i].flavor !== undefined){
           widthSrc.push(localObject[i]);
           }
         }
-        console.log(widthSrc)
-      //  console.log(localObject)
         const shuffled = widthSrc.sort(() => .5 - Math.random());
         this.cards = shuffled.slice(0,3);
-        
         // console.log(this.cards)
-        // console.log(JSON.parse(localStorage.getItem('first')))
-
-        
-
-        // for(var key in localObject){
-        //   var obj = localObject
-        // }
-        // localObject.map(card => console.log(card));
+        // this.randomizedFlavorId = this.cards[Math.floor(Math.random()*this.cards.length)].cardId;
+        // this.randomizedFlavor = this.cards[Math.floor(Math.random()*this.cards.length)].flavor;
+        let random = this.cards[Math.floor(Math.random()*this.cards.length)];
+        this.randomizedFlavorId = random.cardId;
+        this.randomizedFlavor = random.flavor;
       }
       else {
+        this.loadCheck = true;
     try {
-      localStorage.setItem('first', 'someTestText');
-      // this.testSessionStarage = 'test local storage item: string';
-      // localStorage.setItem = ('key', this.testSessionStarage);
-      this.cards = await ApiHandle.getCards();
-      console.log(this.cards); 
-      // const testarray = ['one', 'two'];
-      localStorage.setItem('first', JSON.stringify(this.cards));
+
+      let cards  = await ApiHandle.getCards();
+
+      let localObject =  localStorage.setItem('first', JSON.stringify(cards));
+        
+        let stored = cards[ 'The Boomsday Project' ];
+          const widthSrc = [];
+        for(let i = 0; i < stored.length; i++){
+          // console.log(localObject[i])
+          if(stored[i].img !== undefined && stored[i].flavor !== undefined){
+          widthSrc.push(stored[i]);
+          }
+        }
+        
+
+        const shuffled = widthSrc.sort(() => .5 - Math.random());
+        this.cards = shuffled.slice(0,3);
+
+      
       // var size = Object.keys(this.cards).length;
       // const propOwn = Object.getOwnPropertyNames(this.cards);
       // console.log(propOwn.length);
@@ -104,14 +101,6 @@ export default {
   },
   mounted() {
     this.test4();
-    //  for (var i = 0; i < document.images.length; i++) {
-    //     if (this.test5(document.images[i])) {
-    //       console.log(document.images[i])
-    //         document.images[i].style.visibility = "hidden";
-    //         // console.log(document.images[i])
-    //     }
-    // }
-    // this.test5()
   },
   methods: {
     test() {
@@ -136,30 +125,20 @@ export default {
         });
         images[i].addEventListener('error', ()=> {
           console.log(images[i] + ' not loaded')
-          // this.images.style.visibility = "hidden";
         });
 
         
       }
     },
-    test5(img){
-    // During the onload event, IE correctly identifies any images that
-    // weren't downloaded as not complete. Others should too. Gecko-based
-    // browsers act like NS4 in that they report this incorrectly.
-    if (!img.complete) {
-        return false;
-    }
-
-    // However, they do have two very useful properties: naturalWidth and
-    // naturalHeight. These give the true size of the image. If it failed
-    // to load, either of these should be zero.
-    if (typeof img.naturalWidth != "undefined" && img.naturalWidth == 0) {
-        return false;
-    }
-    
-    // No other way of checking: assume it's ok.
-    return true;
-
+    imageClick(card){
+      // console.log(card.cardId)
+      // console.log(this.randomizedFlavor)
+      if(card.cardId === this.randomizedFlavorId) {
+        this.checkText = 'matched'
+      }
+      else {
+        this.checkText = "missed"
+      }
     }
   },
   props: {
