@@ -4,9 +4,9 @@
     <cardTesting /> 
       <!-- <cardIds /> -->
     
-      <p v-if="error">{{error}}</p>
+      <!-- <p v-if="error">{{error}}</p>
       <p>3 Randomed card Ids from Part of Basic cards: </p>
-      <p v-for="(card, index) in cards" :key="index">{{card}}</p>
+      <p v-for="(card, index) in cards" :key="index">{{card}}</p> -->
       <!-- {{cards}} -->  
       
   </div>
@@ -55,6 +55,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  /* margin-top: 60px; */
 }
 </style>

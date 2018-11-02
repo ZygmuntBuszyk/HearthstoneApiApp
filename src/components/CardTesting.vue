@@ -1,19 +1,31 @@
 <template>
-  <div class="test">
+  <div class="main">
+    <div class="container">
     <p class="error" v-if="error"> {{error}}</p>
-    <h1> {{randomizedFlavor}} </h1>
+    <h1> {{randomizedFlavor}}</h1>
+    <!-- <h1 v-html="randomizedFlavor"></h1> -->
     <p> {{checkText}}</p>
     <p v-if="loadCheck"> {{text}} </p>
+    <p v-if="gameEnds">{{text}} </p>
    <div id="load" v-if="loadCheck"> <pulse-loader :loading="loading" :color="color" :size="size"></pulse-loader> </div>
+   <p> Score: {{score}}</p>
+   <p> Round: {{round}}/15 </p>
 <p>Random cards from a The Boomsday Project set: </p>
-    <div v-for="(card,index) in cards" :key="index">
+<button v-on:click="restart()" class="btn btn-primary"> Play again </button> 
+
+  <div class="row">
+    <div  v-for="(card,index) in cards" :key="index">
       <!-- test -->
-      <ul>
-        <li v-on:click="imageClick(card)"> <img v-bind:src="card.img" /> </li>
-           <li><p> {{card.cardId}} </p></li>
-           <li><p> flavor:  {{card.flavor}} </p></li>
-        </ul>
+   <div class="col-md-4">
+        <div > <img class="cardImages" v-on:click="imageClick(card, $event)" v-bind:src="card.img" /> </div>
+           <!-- <p> {{card.cardId}} </p> -->
+           <!-- <p> flavor:  {{card.flavor}} </p> -->
+ 
+
+</div> 
+        </div>
         <!-- <p v-for="(cart,index) in card" :key="index"> '{{cart.cardId}}',</p> -->
+    </div>
     </div>
   </div>
 </template>
@@ -35,7 +47,10 @@ export default {
       checkText: '',
       loadCheck: false,
       randomizedFlavor: '',
-      randomizedFlavorId: ''
+      randomizedFlavorId: '',
+      score: 0,
+      round: 1,
+      gameEnds: false
     };
   },
   async created() {
@@ -45,10 +60,9 @@ export default {
       if(localStorage.getItem('first')) 
       {
         this.loadCheck = false;
-        
-       
         let localObject = (JSON.parse(localStorage.getItem('first')))[ 'The Boomsday Project' ];
-        const widthSrc = [];
+      
+       const widthSrc = [];
         for(let i = 0; i < localObject.length; i++){
           if(localObject[i].img !== undefined && localObject[i].flavor !== undefined){
           widthSrc.push(localObject[i]);
@@ -56,12 +70,9 @@ export default {
         }
         const shuffled = widthSrc.sort(() => .5 - Math.random());
         this.cards = shuffled.slice(0,3);
-        // console.log(this.cards)
-        // this.randomizedFlavorId = this.cards[Math.floor(Math.random()*this.cards.length)].cardId;
-        // this.randomizedFlavor = this.cards[Math.floor(Math.random()*this.cards.length)].flavor;
         let random = this.cards[Math.floor(Math.random()*this.cards.length)];
         this.randomizedFlavorId = random.cardId;
-        this.randomizedFlavor = random.flavor;
+        this.randomizedFlavor = random.flavor.replace("\n"," ");
       }
       else {
         this.loadCheck = true;
@@ -84,7 +95,9 @@ export default {
         const shuffled = widthSrc.sort(() => .5 - Math.random());
         this.cards = shuffled.slice(0,3);
 
-      
+      let random = this.cards[Math.floor(Math.random()*this.cards.length)];
+        this.randomizedFlavorId = random.cardId;
+        this.randomizedFlavor = random.flavor.replace("\n"," ");
       // var size = Object.keys(this.cards).length;
       // const propOwn = Object.getOwnPropertyNames(this.cards);
       // console.log(propOwn.length);
@@ -130,15 +143,70 @@ export default {
         
       }
     },
-    imageClick(card){
-      // console.log(card.cardId)
-      // console.log(this.randomizedFlavor)
+    imageClick(card, event){
+      if(typeof card.onclick == "function") {
+       // someNode has an event handler already set for the onclick event...
+       console.log('already clicked')
+      }
       if(card.cardId === this.randomizedFlavorId) {
-        this.checkText = 'matched'
+        if(this.round === 15){
+          this.text = `End of a game. Your score: ${this.score}`
+          this.gameEnds = true;
+        } else {
+         this.checkText = 'matched'
+        this.round++;
+        this.score++;
+        this.again();
+        }
       }
       else {
-        this.checkText = "missed"
+        //  Klikniecie zlej karty
+        if(this.round === 15){ this.cards = []} 
+        else {
+        this.checkText = "missed";
+        // console.log(card)
+        let wrongClickedImage = event.target;
+        console.log(wrongClickedImage) 
+        wrongClickedImage.style = "display: none"
+        // event.target.style = "  display: none"
+        // console.log(event);
+        if(this.score === 0 ) {
+          console.log('its already 0');
+        } else {
+          this.score--;
+        }
+        }
       }
+    },
+    setDiffrentExpansion(){
+      
+    },
+    again(){
+      console.log('again');   
+       let cardImages = document.getElementsByClassName('cardImages');
+       for(let i = 0; i < cardImages.length; i++) {
+          console.log(cardImages[i])
+         cardImages[i].style.display = 'block'
+       };
+         let localObject = (JSON.parse(localStorage.getItem('first')))[ 'The Boomsday Project' ];
+        const widthSrc = [];
+        for(let i = 0; i < localObject.length; i++){
+          if(localObject[i].img !== undefined && localObject[i].flavor !== undefined){
+          widthSrc.push(localObject[i]);
+          }
+        }
+        const shuffled = widthSrc.sort(() => .5 - Math.random());
+        this.cards = shuffled.slice(0,3);
+        let random = this.cards[Math.floor(Math.random()*this.cards.length)];
+        this.randomizedFlavorId = random.cardId;
+        this.randomizedFlavor = random.flavor.replace("\n"," ");
+        
+
+    },
+    restart() {
+      this.again();
+      this.score = 0;
+      this.round = 1;
     }
   },
   props: {
@@ -149,7 +217,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+ .main {
+   height: 100vh;
+ }
 h3 {
   margin: 40px 0 0;
 }
@@ -163,5 +233,36 @@ li {
 }
 a {
   color: #42b983;
+}
+
+img {
+  height: 250px;
+  width: 200px;
+}
+ /* 3 blocks  */
+.square-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.square {
+  position: relative;
+  flex-basis: calc(33.333% - 10px);
+  margin: 5px;
+  border: 1px solid;
+  box-sizing: border-box;
+}
+
+.square::before {
+  content: '';
+  display: block;
+  padding-top: 100%;
+}
+
+.square .content {
+  position: absolute;
+  top: 0; left: 0;
+    height: 100%;
+  width: 100%;
 }
 </style>
