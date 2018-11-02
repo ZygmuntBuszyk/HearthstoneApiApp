@@ -12,6 +12,8 @@
    <p> Round: {{round}}/15 </p>
 <p>Random cards from a The Boomsday Project set: </p>
 <button v-on:click="restart()" class="btn btn-primary"> Play again </button> 
+<button v-on:click="setDiffrentExpansion()" class="btn btn-primary"> The Witchwood</button>
+
 
   <div class="row">
     <div  v-for="(card,index) in cards" :key="index">
@@ -50,7 +52,8 @@ export default {
       randomizedFlavorId: '',
       score: 0,
       round: 1,
-      gameEnds: false
+      gameEnds: false,
+      currentExpansion: ''
     };
   },
   async created() {
@@ -59,42 +62,26 @@ export default {
       // localStorage.clear()
       if(localStorage.getItem('first')) 
       {
+        this.currentExpansion = 'The Boomsday Project';
         this.loadCheck = false;
-        let localObject = (JSON.parse(localStorage.getItem('first')))[ 'The Boomsday Project' ];
-      
-       const widthSrc = [];
-        for(let i = 0; i < localObject.length; i++){
-          if(localObject[i].img !== undefined && localObject[i].flavor !== undefined){
-          widthSrc.push(localObject[i]);
-          }
-        }
-        const shuffled = widthSrc.sort(() => .5 - Math.random());
-        this.cards = shuffled.slice(0,3);
-        let random = this.cards[Math.floor(Math.random()*this.cards.length)];
-        this.randomizedFlavorId = random.cardId;
-        this.randomizedFlavor = random.flavor.replace("\n"," ");
+        let localObject = (JSON.parse(localStorage.getItem('first')))[ this.currentExpansion ];
+        this.currentCards(localObject);
       }
       else {
         this.loadCheck = true;
     try {
-
+       this.currentExpansion = 'The Boomsday Project';
       let cards  = await ApiHandle.getCards();
-
       let localObject =  localStorage.setItem('first', JSON.stringify(cards));
-        
-        let stored = cards[ 'The Boomsday Project' ];
+        let stored = cards[ this.currentExpansion ];
           const widthSrc = [];
         for(let i = 0; i < stored.length; i++){
-          // console.log(localObject[i])
           if(stored[i].img !== undefined && stored[i].flavor !== undefined){
           widthSrc.push(stored[i]);
           }
         }
-        
-
         const shuffled = widthSrc.sort(() => .5 - Math.random());
         this.cards = shuffled.slice(0,3);
-
       let random = this.cards[Math.floor(Math.random()*this.cards.length)];
         this.randomizedFlavorId = random.cardId;
         this.randomizedFlavor = random.flavor.replace("\n"," ");
@@ -164,12 +151,9 @@ export default {
         if(this.round === 15){ this.cards = []} 
         else {
         this.checkText = "missed";
-        // console.log(card)
         let wrongClickedImage = event.target;
         console.log(wrongClickedImage) 
-        wrongClickedImage.style = "display: none"
-        // event.target.style = "  display: none"
-        // console.log(event);
+        wrongClickedImage.style = "display: none";
         if(this.score === 0 ) {
           console.log('its already 0');
         } else {
@@ -179,17 +163,13 @@ export default {
       }
     },
     setDiffrentExpansion(){
-      
+      this.currentExpansion = 'The Witchwood';
+        let localObject = (JSON.parse(localStorage.getItem('first')))[ this.currentExpansion  ];
+        this.currentCards(localObject);
+        
     },
-    again(){
-      console.log('again');   
-       let cardImages = document.getElementsByClassName('cardImages');
-       for(let i = 0; i < cardImages.length; i++) {
-          console.log(cardImages[i])
-         cardImages[i].style.display = 'block'
-       };
-         let localObject = (JSON.parse(localStorage.getItem('first')))[ 'The Boomsday Project' ];
-        const widthSrc = [];
+    currentCards(localObject) {
+       const widthSrc = [];
         for(let i = 0; i < localObject.length; i++){
           if(localObject[i].img !== undefined && localObject[i].flavor !== undefined){
           widthSrc.push(localObject[i]);
@@ -200,6 +180,15 @@ export default {
         let random = this.cards[Math.floor(Math.random()*this.cards.length)];
         this.randomizedFlavorId = random.cardId;
         this.randomizedFlavor = random.flavor.replace("\n"," ");
+    },
+    again(){
+       let cardImages = document.getElementsByClassName('cardImages');
+       for(let i = 0; i < cardImages.length; i++) {
+          console.log(cardImages[i])
+         cardImages[i].style.display = 'block'
+       };
+         let localObject = (JSON.parse(localStorage.getItem('first')))[ this.currentExpansion ];
+        this.currentCards(localObject)
         
 
     },
@@ -238,6 +227,9 @@ a {
 img {
   height: 250px;
   width: 200px;
+}
+.btn {
+  margin: 20px;
 }
  /* 3 blocks  */
 .square-container {
