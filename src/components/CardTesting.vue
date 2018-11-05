@@ -1,8 +1,10 @@
 <template>
   <div class="main">
-    <div class="container">
-    <p class="error" v-if="error"> {{error}}</p>
-    <h1> {{randomizedFlavor}}</h1>
+    <div class="container">   
+    <p class="error" v-if="error"> {{error}}</p> 
+    <div class="static">
+    <h2> {{randomizedFlavor}}</h2   >
+    </div>
     <!-- <h1 v-html="randomizedFlavor"></h1> -->
     <p> {{checkText}}</p>
     <p v-if="loadCheck"> {{text}} </p>
@@ -10,11 +12,12 @@
    <div id="load" v-if="loadCheck"> <pulse-loader :loading="loading" :color="color" :size="size"></pulse-loader> </div>
    <p> Score: {{score}}</p>
    <p> Round: {{round}}/15 </p>
-<p>Random cards from a The Boomsday Project set: </p>
+<p>Random cards from {{currentExpansion}} set: </p>
+
+<button v-on:click="setDiffrentExpansion('The Boomsday Project');backgroundChange('boomsday.jpg')" class="btn btn-primary"> The Boomsday Project</button>
+<button @click="setDiffrentExpansion('The Witchwood');backgroundChange('witchwood.jpg')" class="btn btn-primary"> The Witchwood</button>
+<button @click="setDiffrentExpansion('The League of Explorers');backgroundChange('legue.jpg')" class="btn btn-primary"> The League of Explorers</button>
 <button v-on:click="restart()" class="btn btn-primary"> Play again </button> 
-<button v-on:click="setDiffrentExpansion()" class="btn btn-primary"> The Witchwood</button>
-
-
   <div class="row">
     <div  v-for="(card,index) in cards" :key="index">
       <!-- test -->
@@ -35,7 +38,7 @@
 <script>
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
 import ApiHandle from '../ApiHandling.js';
-
+import Set from '../SetCardSets.js'
 export default {
   name: 'CardTesting',
   components: {
@@ -53,7 +56,8 @@ export default {
       score: 0,
       round: 1,
       gameEnds: false,
-      currentExpansion: ''
+      currentExpansion: '',
+      background: ''
     };
   },
   async created() {
@@ -85,9 +89,6 @@ export default {
       let random = this.cards[Math.floor(Math.random()*this.cards.length)];
         this.randomizedFlavorId = random.cardId;
         this.randomizedFlavor = random.flavor.replace("\n"," ");
-      // var size = Object.keys(this.cards).length;
-      // const propOwn = Object.getOwnPropertyNames(this.cards);
-      // console.log(propOwn.length);
     } catch (err) {
       this.error = err.message;
     } finally {
@@ -96,13 +97,25 @@ export default {
       }
       
   },
+   computed: {
+    // backgrounds () {
+    //   return require('../assets/backgrounds/witchwood.jpg')
+    // },
+  },
   beforeMount() {
-    this.test3();
+    this.Loading();
   },
   mounted() {
     this.test4();
   },
   methods: {
+  async backgroundChange(background){
+    let backgrounds = require("../assets/backgrounds/"+background);
+    // console.log(backgrounds);
+    let body = document.getElementsByTagName("BODY")[0];
+    body.style.backgroundImage = `url(${backgrounds})`;
+
+    },
     test() {
       this.text = 'loading the data:';    
     },
@@ -110,21 +123,17 @@ export default {
       this.text = 'there we go:'
       document.getElementById('load').style.display = 'none';
     },
-    test3() {
-      console.log('before mount');
+    Loading() {
+      console.log('Loading the assets');
     },
     test4() {
-        console.log('mounted');
         let images = document.getElementsByTagName('img');
-        console.log(images)
         for (let i = 0; i < images.length; i++) {
-        console.log(images[i])
-        
         images[i].addEventListener('load', () => {
-          console.log(`${images[i].src} 'image loaded properly'`)
+          // console.log(`${images[i].src} 'image loaded properly'`)
         });
         images[i].addEventListener('error', ()=> {
-          console.log(images[i] + ' not loaded')
+          // console.log(images[i] + ' not loaded')
         });
 
         
@@ -141,6 +150,7 @@ export default {
           this.gameEnds = true;
         } else {
          this.checkText = 'matched'
+         console.log(event.target)
         this.round++;
         this.score++;
         this.again();
@@ -152,8 +162,11 @@ export default {
         else {
         this.checkText = "missed";
         let wrongClickedImage = event.target;
-        console.log(wrongClickedImage) 
-        wrongClickedImage.style = "display: none";
+        wrongClickedImage.style.setProperty("animation", "cardShatter 1.5s");
+        setTimeout( function(){
+        wrongClickedImage.style = " visibility: hidden";
+        },1500);
+        // console.log(wrongClickedImage);
         if(this.score === 0 ) {
           console.log('its already 0');
         } else {
@@ -162,8 +175,10 @@ export default {
         }
       }
     },
-    setDiffrentExpansion(){
-      this.currentExpansion = 'The Witchwood';
+    setDiffrentExpansion(expansion){
+      console.log(expansion)
+      console.log($('row').children.style)
+      this.currentExpansion = expansion;
         let localObject = (JSON.parse(localStorage.getItem('first')))[ this.currentExpansion  ];
         this.currentCards(localObject);
         
@@ -185,7 +200,8 @@ export default {
        let cardImages = document.getElementsByClassName('cardImages');
        for(let i = 0; i < cardImages.length; i++) {
           console.log(cardImages[i])
-         cardImages[i].style.display = 'block'
+         cardImages[i].style.visibility = 'visible';
+         cardImages[i].style.setProperty("animation", "none");
        };
          let localObject = (JSON.parse(localStorage.getItem('first')))[ this.currentExpansion ];
         this.currentCards(localObject)
@@ -205,9 +221,56 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
+<style>
+body {
+  /* /img/witchwood.8c6e9130.jpg */
+  height: 100vh;
+  transition: background-image 3s ease-in-out;
+  background-image: url('../assets/backgrounds/hearthstone.jpg');
+  background-size:cover;
+  background-position:center;
+  background-repeat: no-repeat;
+  background-color: black;
+}
+@keyframes cardShatter {
+  0% {
+    transform: scale(1)
+  }
+  50% {
+    transform: scale(1.3)
+  }
+  100% {
+    transform: scale(0);
+    visibility: hidden;
+  }
+}
+@keyframes cardRight {
+  0% {
+    transform: scale(1)
+  }
+  50% {
+    transform: scale(1.3)
+  }
+  100% {
+    transform: scale(0);
+    visibility: hidden;
+  }
+}
+</style>
 <style scoped>
  .main {
-   height: 100vh;
+   /* height: 100vh; */
+   height:100%;
+   color:white;
+ }
+ .static {
+   height: 120px;
+ }
+ 
+ h2 {
+   background:black;
+   border:solid 1px beige;
+   padding: 10px;
  }
 h3 {
   margin: 40px 0 0;
@@ -229,7 +292,7 @@ img {
   width: 200px;
 }
 .btn {
-  margin: 20px;
+  margin: 10px;
 }
  /* 3 blocks  */
 .square-container {
@@ -243,6 +306,11 @@ img {
   margin: 5px;
   border: 1px solid;
   box-sizing: border-box;
+}
+.row {
+  justify-content: center;
+  margin: 0;
+  padding: 0;
 }
 
 .square::before {

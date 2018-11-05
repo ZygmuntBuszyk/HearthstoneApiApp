@@ -1,21 +1,11 @@
 class Set {
-  static getCard(cardId) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const res = await axios.get(`${url}cards/${cardId}`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Mashape-Key':
-              'hKmSaZwCRPmshF29q1crCzsbsxhAp1moa8Yjsn53S1NtYCURsw'
-          }
-        });
-        const data = res.data;
-        resolve(data.map(card => card));
-        console.log(res.data);
-      } catch (err) {
-        reject(err);
-      }
-    });
+  static Witchwood() {
+    console.log('You choose witchwood expansion');
+    this.currentExpansion = 'The Witchwood';
+    let localObject = JSON.parse(localStorage.getItem('first'))[
+      this.currentExpansion
+    ];
+    this.currentCards(localObject);
   }
 }
 
