@@ -373,8 +373,9 @@ img {
 .status {
   font-size:45px;
   opacity:0.8;
+  /* color:yellow; */
   position: absolute;  
-  top: 50%;
+  top: 80%;
   left: 50%;
   transform:translate(-50%,-50%)
 }
