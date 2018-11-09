@@ -1,12 +1,14 @@
 <template>
   <div class="main">
+    <navbar :score="score" :round="round" @setDiffrentExpansion="setDiffrentExpansion" @restart="restart" 
+     @backgroundChange ="backgroundChange" />
     <div class="container">   
     <p class="error" v-if="error"> {{error}}</p> 
     <div class="static">
     <h2> {{randomizedFlavor}}</h2   >
     </div>
     <!-- <h1 v-html="randomizedFlavor"></h1> -->
-    <p> {{checkText}}</p>
+    <p v-if="confirmation" class="status"> {{checkText}}</p>
     <p v-if="loadCheck"> {{text}} </p>
     <p v-if="gameEnds">{{text}} </p>
    <div id="load" v-if="loadCheck"> <pulse-loader :loading="loading" :color="color" :size="size"></pulse-loader> </div>
@@ -17,19 +19,17 @@
 <button v-on:click="setDiffrentExpansion('The Boomsday Project');backgroundChange('boomsday.jpg')" class="btn btn-primary"> The Boomsday Project</button>
 <button @click="setDiffrentExpansion('The Witchwood');backgroundChange('witchwood.jpg')" class="btn btn-primary"> The Witchwood</button>
 <button @click="setDiffrentExpansion('The League of Explorers');backgroundChange('legue.jpg')" class="btn btn-primary"> The League of Explorers</button>
-<button v-on:click="restart()" class="btn btn-primary"> Play again </button> 
-  <div class="row">
-    <div  v-for="(card,index) in cards" :key="index">
-      <!-- test -->
-   <div class="col-md-4">
-        <div > <img class="cardImages" v-on:click="imageClick(card, $event)" v-bind:src="card.img" /> </div>
-           <!-- <p> {{card.cardId}} </p> -->
-           <!-- <p> flavor:  {{card.flavor}} </p> -->
- 
+<button @click="restart()" class="btn btn-primary"> Play again </button> 
 
-</div> 
-        </div>
-        <!-- <p v-for="(cart,index) in card" :key="index"> '{{cart.cardId}}',</p> -->
+<div class="row"> 
+  <div  v-for="(card,index) in cards" :key="index">
+  <div class="col-md-4">
+      <!-- <transition> -->
+        <!--  v-if="showCards" -->
+    <div><img class="cardImages" v-on:click="imageClick(card, $event)" v-bind:src="card.img" /> </div>
+      <!-- </transition> -->
+  </div> 
+    </div>
     </div>
     </div>
   </div>
@@ -38,11 +38,13 @@
 <script>
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
 import ApiHandle from '../ApiHandling.js';
-import Set from '../SetCardSets.js'
+import Set from '../SetCardSets.js';
+import navbar from './Nav.vue';
 export default {
   name: 'CardTesting',
   components: {
-    PulseLoader
+    PulseLoader,
+    navbar
   },
   data() {
     return {
@@ -57,7 +59,9 @@ export default {
       round: 1,
       gameEnds: false,
       currentExpansion: '',
-      background: ''
+      background: '',
+      confirmation: false,
+      showCards: false
     };
   },
   async created() {
@@ -149,11 +153,17 @@ export default {
           this.text = `End of a game. Your score: ${this.score}`
           this.gameEnds = true;
         } else {
+          // Klikniecie dobrej karty
          this.checkText = 'matched'
-         console.log(event.target)
+         let rightClickedImage = event.target;
+         console.log(rightClickedImage)
+        rightClickedImage.style.setProperty("animation", "cardRight 1.5s");
+        this.animateConfirmationMessage();
+        setTimeout( ()=>{
         this.round++;
         this.score++;
         this.again();
+        },1500);
         }
       }
       else {
@@ -167,17 +177,34 @@ export default {
         wrongClickedImage.style = " visibility: hidden";
         },1500);
         // console.log(wrongClickedImage);
+         this.animateConfirmationMessage();
         if(this.score === 0 ) {
           console.log('its already 0');
         } else {
-          this.score--;
+          setTimeout( () =>{
+         this.score--;
+        },1500);
+        
         }
         }
       }
     },
+    animateConfirmationMessage() {
+      setTimeout( ()=>{
+        this.confirmation = true;
+      },1000);
+      setTimeout( ()=>{
+        this.confirmation = false;
+      },1500);
+    
+    },
     setDiffrentExpansion(expansion){
       console.log(expansion)
-      console.log($('row').children.style)
+      // console.log(document.getElementsByClassName('row').length)
+        let cardImages = document.getElementsByClassName('cardImages');
+       for(let i = 0; i < cardImages.length; i++) {
+         cardImages[i].style.setProperty("visibility", "visible");
+       };
       this.currentExpansion = expansion;
         let localObject = (JSON.parse(localStorage.getItem('first')))[ this.currentExpansion  ];
         this.currentCards(localObject);
@@ -197,10 +224,15 @@ export default {
         this.randomizedFlavor = random.flavor.replace("\n"," ");
     },
     again(){
+      // this.showCards = false;
+      //  setTimeout( ()=>{
+      //   this.showCards = true;
+      //   },250);
+
+
        let cardImages = document.getElementsByClassName('cardImages');
        for(let i = 0; i < cardImages.length; i++) {
-          console.log(cardImages[i])
-         cardImages[i].style.visibility = 'visible';
+         cardImages[i].style.setProperty("visibility", "visible");
          cardImages[i].style.setProperty("animation", "none");
        };
          let localObject = (JSON.parse(localStorage.getItem('first')))[ this.currentExpansion ];
@@ -232,6 +264,20 @@ body {
   background-repeat: no-repeat;
   background-color: black;
 }
+/* .v-enter-active {
+  animation: cardShow 2s;
+}; */
+@keyframes cardShow {
+  0% {
+    transform: scale(1.5)
+  }
+  50% {
+    transform: scale(0)
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 @keyframes cardShatter {
   0% {
     transform: scale(1)
@@ -248,12 +294,11 @@ body {
   0% {
     transform: scale(1)
   }
-  50% {
+  30% {
     transform: scale(1.3)
   }
   100% {
-    transform: scale(0);
-    visibility: hidden;
+    transform: scale(1.25);
   }
 }
 </style>
@@ -324,5 +369,13 @@ img {
   top: 0; left: 0;
     height: 100%;
   width: 100%;
+}
+.status {
+  font-size:45px;
+  opacity:0.8;
+  position: absolute;  
+  top: 50%;
+  left: 50%;
+  transform:translate(-50%,-50%)
 }
 </style>

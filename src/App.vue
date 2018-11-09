@@ -1,14 +1,9 @@
 <template>
   <div id="app">
-    
-    <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
+    <!-- <navbar /> -->
+
     <cardTesting /> 
       <!-- <cardIds /> -->
-    
-      <!-- <p v-if="error">{{error}}</p>
-      <p>3 Randomed card Ids from Part of Basic cards: </p>
-      <p v-for="(card, index) in cards" :key="index">{{card}}</p> -->
-      <!-- {{cards}} -->  
       
   </div>
 </template>
@@ -16,13 +11,15 @@
 <script>
 import cardTesting from './components/CardTesting.vue';
 import cardIds from './components/CardIds.vue';
+// import navbar from './components/Nav.vue'
 
 
 export default {
   name: 'app',
   components: {
     cardTesting,
-    cardIds
+    cardIds,
+    // navbar
   },
    data() {
     return {
