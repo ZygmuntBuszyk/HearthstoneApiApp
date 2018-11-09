@@ -9,32 +9,26 @@
 
       <div class="collapse navbar-collapse" id="navbarsExample03">
         <ul class="navbar-nav mr-auto">
-          <!-- <button v-on:click="setDiffrentExpansion('The Boomsday Project');backgroundChange('boomsday.jpg')" class="btn btn-primary"> The Boomsday Project</button>
-<button @click="setDiffrentExpansion('The Witchwood');backgroundChange('witchwood.jpg')" class="btn btn-primary"> The Witchwood</button> -->
+           <li class="nav-item active">
+             <a class="nav-link" style="color:yellow; padding-right: 20px;">CHOOSE THE SET: <span class="sr-only">(current)</span></a>
+          </li>
           <li class="nav-item active">
-            <!-- <a class="nav-link" @click="$emit(`setDiffrentExpansion('The Boomsday Project')`)">TBP <span class="sr-only">(current)</span></a> -->
-             <a class="nav-link" @click="expansion; background">TBP <span class="sr-only">(current)</span></a>
+             <a class="nav-link" @click="expansion( 'The Boomsday Project'); background('boomsday.jpg')">TBP <span class="sr-only">(current)</span></a>
           </li>
            <li class="nav-item active">
-            <a class="nav-link" href="#">Witchwood <span class="sr-only">(current)</span></a>
+            <a class="nav-link" @click="expansion('The Witchwood'); background('witchwood.jpg')">Witchwood <span class="sr-only">(current)</span></a>
           </li>
            <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            <a class="nav-link" @click="expansion('The League of Explorers'); background('legue.jpg')">TLOE<span class="sr-only">(current)</span></a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" href="#">Disabled</a>
-          </li>
-          <li class="nav-item dropdown">
+          <!-- <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="https://example.com" id="dropdown03" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
             <div class="dropdown-menu" aria-labelledby="dropdown03">
               <a class="dropdown-item" href="#">Action</a>
               <a class="dropdown-item" href="#">Another action</a>
               <a class="dropdown-item" href="#">Something else here</a>
             </div>
-          </li>
+          </li> -->
            
         </ul>
       <p class="my-2 my-sm-0"> Round: {{this.$attrs.round}} </p>
@@ -56,17 +50,22 @@ export default {
     }
 },
   methods: {
-    expansion: function() {
-      this.$emit('setDiffrentExpansion', 'The Boomsday Project')
+    expansion(expansion) {
+      this.$emit('setDiffrentExpansion', expansion)
     },
-    background: function() {
-      this.$emit('backgroundChange', 'boomsday.jpg')
+    background(background) {
+      this.$emit('backgroundChange', background)
     }
   }
 }
 </script>
 
 <style scoped>
+
+element.style {
+    color: yellow;
+}
+
 p {
   color: white;
   
@@ -81,5 +80,12 @@ p {
 }
 body {
   overflow-x:hidden;
+}
+a {
+  cursor: pointer;
+  text-decoration: none;
+}
+a:hover {
+  color: yellow !important
 }
 </style>

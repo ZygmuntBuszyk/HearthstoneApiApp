@@ -16,10 +16,10 @@
    <p> Round: {{round}}/15 </p> -->
 <p>Random cards from <b style="color:gold">{{currentExpansion}}</b> set: </p>
 
-<button v-on:click="setDiffrentExpansion('The Boomsday Project');backgroundChange('boomsday.jpg')" class="btn btn-primary"> The Boomsday Project</button>
+<!-- <button @click="setDiffrentExpansion('The Boomsday Project');backgroundChange('boomsday.jpg')" class="btn btn-primary"> The Boomsday Project</button>
 <button @click="setDiffrentExpansion('The Witchwood');backgroundChange('witchwood.jpg')" class="btn btn-primary"> The Witchwood</button>
 <button @click="setDiffrentExpansion('The League of Explorers');backgroundChange('legue.jpg')" class="btn btn-primary"> The League of Explorers</button>
-<button @click="restart()" class="btn btn-primary"> Play again </button> 
+<button @click="restart()" class="btn btn-primary"> Play again </button>  -->
 
 <div class="row"> 
   <div  v-for="(card,index) in cards" :key="index">
