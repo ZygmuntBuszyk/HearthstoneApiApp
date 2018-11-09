@@ -12,9 +12,9 @@
     <p v-if="loadCheck"> {{text}} </p>
     <p v-if="gameEnds">{{text}} </p>
    <div id="load" v-if="loadCheck"> <pulse-loader :loading="loading" :color="color" :size="size"></pulse-loader> </div>
-   <p> Score: {{score}}</p>
-   <p> Round: {{round}}/15 </p>
-<p>Random cards from {{currentExpansion}} set: </p>
+   <!-- <p> Score: {{score}}</p>
+   <p> Round: {{round}}/15 </p> -->
+<p>Random cards from <b style="color:gold">{{currentExpansion}}</b> set: </p>
 
 <button v-on:click="setDiffrentExpansion('The Boomsday Project');backgroundChange('boomsday.jpg')" class="btn btn-primary"> The Boomsday Project</button>
 <button @click="setDiffrentExpansion('The Witchwood');backgroundChange('witchwood.jpg')" class="btn btn-primary"> The Witchwood</button>

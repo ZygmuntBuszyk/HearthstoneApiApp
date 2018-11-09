@@ -13,7 +13,7 @@
 <button @click="setDiffrentExpansion('The Witchwood');backgroundChange('witchwood.jpg')" class="btn btn-primary"> The Witchwood</button> -->
           <li class="nav-item active">
             <!-- <a class="nav-link" @click="$emit(`setDiffrentExpansion('The Boomsday Project')`)">TBP <span class="sr-only">(current)</span></a> -->
-             <a class="nav-link" @click="setExpansion">TBP <span class="sr-only">(current)</span></a>
+             <a class="nav-link" @click="expansion; background">TBP <span class="sr-only">(current)</span></a>
           </li>
            <li class="nav-item active">
             <a class="nav-link" href="#">Witchwood <span class="sr-only">(current)</span></a>
@@ -56,9 +56,11 @@ export default {
     }
 },
   methods: {
-    setExpansion(event) {
-      console.log(event)
-      this.$emit('clicked', 'The Boomsday Project')
+    expansion: function() {
+      this.$emit('setDiffrentExpansion', 'The Boomsday Project')
+    },
+    background: function() {
+      this.$emit('backgroundChange', 'boomsday.jpg')
     }
   }
 }
